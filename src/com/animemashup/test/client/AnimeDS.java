@@ -1,15 +1,28 @@
 package com.animemashup.test.client;
 
-import com.google.gwt.http.client.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.smartgwt.client.data.Criteria;
+import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.data.XJSONDataSource;
 import com.smartgwt.client.data.fields.DataSourceImageField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
+import com.smartgwt.client.types.DSOperationType;
 import com.smartgwt.client.types.FieldType;
+import com.smartgwt.client.util.JSOHelper;
 
 public class AnimeDS extends XJSONDataSource {
-	private static AnimeDS instance = null;  
+	//YQL string
+    final static String YQL_URL = "http://query.yahooapis.com/v1/public/yql";
+    final static String YQL_QUERY = "select anime from json where url=";
+    	
+    //URL strings for MAL API
+    final static String BASE_URL = "http://mal-api.com";
+    final static String URL_ANIMELIST = BASE_URL + "/animelist/"; private static AnimeDS instance = null;  
 	  
     public static AnimeDS getInstance() {  
         if (instance == null) {  
@@ -19,7 +32,7 @@ public class AnimeDS extends XJSONDataSource {
     }  
     
     public AnimeDS(String User) {
-    	setDataURL(getURL("splinter98"));
+    	setDataURL(YQL_URL);
         setRecordXPath("query/results/json/anime");
       //  yahooDS.setCacheAllData(false);
         setAutoCacheAllData(true);
@@ -51,15 +64,29 @@ public class AnimeDS extends XJSONDataSource {
         addField(watchedStatus);
     }
     
-    private static String getURL(String User) {
-    	//YQL string
-    	final String YQL_URL = "http://query.yahooapis.com/v1/public/yql?q=";
-    	final String YQL_QUERY = "select * from json where url=";
-    	
-    	//URL strings for MAL API
-    	final String BASE_URL = "http://mal-api.com";
-    	final String URL_ANIMELIST = BASE_URL + "/animelist/"; 
-    	
-    	return YQL_URL + URL.encode(YQL_QUERY+'"'+URL_ANIMELIST+User+'"')+"&format=json";
+    private static String getQuery(String User) {
+    	return YQL_QUERY+'"'+URL_ANIMELIST+User+'"';
     }
+    
+    //This method is called to transform the criteria into a a format that can be used by YQL
+    @SuppressWarnings("unchecked")
+	@Override  
+    protected Object transformRequest(DSRequest dsRequest) {  
+    	if (!dsRequest.getOperationType().equals(DSOperationType.FETCH))
+    		return super.transformRequest(dsRequest);
+    	Criteria c = dsRequest.getCriteria();
+    	HashMap<String, String> hm = (HashMap<String, String>) c.getValues();
+    	Iterator<Map.Entry<String, String>> i = (Iterator<Map.Entry<String, String>>) hm.entrySet().iterator();
+    	String where = getQuery("splinter98");
+    	while(i.hasNext()) {
+    		Map.Entry me = (Map.Entry)i.next();
+    		if (me.getKey().equals("__gwt_ObjectId"))
+    			continue;
+    		where = where + " and anime."+me.getKey()+"=\""+me.getValue()+'"';
+    	}
+    	c.addCriteria("q", where);
+    	c.addCriteria("format", "json");
+    	
+    	return super.transformRequest(dsRequest);  
+    } 
 }

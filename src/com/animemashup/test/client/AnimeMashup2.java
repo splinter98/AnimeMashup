@@ -35,7 +35,7 @@ public class AnimeMashup2 implements EntryPoint {
         final AnimeDS animeList = AnimeDS.getInstance();
 
         final TileGrid tileGrid = new TileGrid();
-        tileGrid.setTop(120);
+        tileGrid.setTop(130);
         tileGrid.setWidth(960);
         tileGrid.setHeight(800);
         tileGrid.setTileWidth(150);
@@ -73,16 +73,52 @@ public class AnimeMashup2 implements EntryPoint {
 
         final DynamicForm form = new DynamicForm();
 
-        ButtonItem button = new ButtonItem();
-        button.setTitle("Load");
-        button.setStartRow(false);
-        button.addClickHandler(new ClickHandler() {
+        ButtonItem watchingBtn = new ButtonItem();
+        watchingBtn.setTitle("Watching");
+        watchingBtn.setStartRow(false);
+        watchingBtn.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                tileGrid.fetchData(new Criteria("watched_status", "watching"));
+            }
+        });
+        
+        ButtonItem completedBtn = new ButtonItem();
+        completedBtn.setTitle("Completed");
+        completedBtn.setStartRow(false);
+        completedBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 tileGrid.fetchData(new Criteria("watched_status", "completed"));
             }
         });
+        
+        ButtonItem planToWatchBtn = new ButtonItem();
+        planToWatchBtn.setTitle("Plan to Watch");
+        planToWatchBtn.setStartRow(false);
+        planToWatchBtn.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                tileGrid.fetchData(new Criteria("watched_status", "plan to watch"));
+            }
+        });
+        
+        ButtonItem onHoldBtn = new ButtonItem();
+        onHoldBtn.setTitle("On Hold");
+        onHoldBtn.setStartRow(false);
+        onHoldBtn.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                tileGrid.fetchData(new Criteria("watched_status", "on-hold"));
+            }
+        });     
+        
+        ButtonItem droppedBtn = new ButtonItem();
+        droppedBtn.setTitle("dropped");
+        droppedBtn.setStartRow(false);
+        droppedBtn.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                tileGrid.fetchData(new Criteria("watched_status", "dropped"));
+            }
+        });
 
-        form.setItems(button);
+        form.setItems(watchingBtn, completedBtn, planToWatchBtn, onHoldBtn, droppedBtn);
         
         canvas.addChild(form);
         canvas.addChild(tileGrid);
