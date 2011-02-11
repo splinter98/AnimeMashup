@@ -28,13 +28,16 @@ import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
 public class AnimeMashup2 implements EntryPoint {
 	
+	final TileGrid tileGrid = new TileGrid();
+	
     public void onModuleLoad() {
 
         Canvas canvas = new Canvas();
 
         final AnimeDS animeList = AnimeDS.getInstance();
-
-        final TileGrid tileGrid = new TileGrid();
+        animeList.setAutoCacheAllData(true);
+        
+        
         tileGrid.setTop(130);
         tileGrid.setWidth(960);
         tileGrid.setHeight(800);
@@ -68,8 +71,11 @@ public class AnimeMashup2 implements EntryPoint {
 //            } 
 //        });  
         tileGrid.setFields(thumbnailField, titleField, watchedStatusField);
+                
+        //tileGrid.getResultSet().setUseClientFiltering(true);
         tileGrid.fetchData();
-        tileGrid.sortByProperty("watched_status", true);
+        
+        //tileGrid.sortByProperty("watched_status", true);
 
         final DynamicForm form = new DynamicForm();
 
@@ -78,7 +84,7 @@ public class AnimeMashup2 implements EntryPoint {
         watchingBtn.setStartRow(false);
         watchingBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                tileGrid.fetchData(new Criteria("watched_status", "watching"));
+                Filter(new Criteria("watched_status", "watching"));
             }
         });
         
@@ -87,7 +93,7 @@ public class AnimeMashup2 implements EntryPoint {
         completedBtn.setStartRow(false);
         completedBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                tileGrid.fetchData(new Criteria("watched_status", "completed"));
+                Filter(new Criteria("watched_status", "completed"));
             }
         });
         
@@ -96,7 +102,7 @@ public class AnimeMashup2 implements EntryPoint {
         planToWatchBtn.setStartRow(false);
         planToWatchBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                tileGrid.fetchData(new Criteria("watched_status", "plan to watch"));
+                Filter(new Criteria("watched_status", "plan to watch"));
             }
         });
         
@@ -105,7 +111,7 @@ public class AnimeMashup2 implements EntryPoint {
         onHoldBtn.setStartRow(false);
         onHoldBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                tileGrid.fetchData(new Criteria("watched_status", "on-hold"));
+                Filter(new Criteria("watched_status", "on-hold"));
             }
         });     
         
@@ -114,10 +120,10 @@ public class AnimeMashup2 implements EntryPoint {
         droppedBtn.setStartRow(false);
         droppedBtn.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                tileGrid.fetchData(new Criteria("watched_status", "dropped"));
+                Filter(new Criteria("watched_status", "Dropped"));
             }
         });
-
+        
         form.setItems(watchingBtn, completedBtn, planToWatchBtn, onHoldBtn, droppedBtn);
         
         canvas.addChild(form);
@@ -125,4 +131,9 @@ public class AnimeMashup2 implements EntryPoint {
         canvas.draw();
     }
 
+	public void Filter(Criteria c) {
+		tileGrid.getResultSet().setCriteria(c);
+		tileGrid.getResultSet().filterLocalData();
+		//tg.redraw();
+	}
 }
