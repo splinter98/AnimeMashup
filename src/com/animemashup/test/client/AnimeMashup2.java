@@ -16,13 +16,17 @@ package com.animemashup.test.client;
  * Lesser General Public License for more details.
  */
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.EntryPoint;
+import com.smartgwt.client.data.AdvancedCriteria;
 import com.smartgwt.client.data.Criteria;
+import com.smartgwt.client.types.OperatorId;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
-import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.form.events.ItemChangedEvent;
+import com.smartgwt.client.widgets.form.events.ItemChangedHandler;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.tile.TileGrid;
 import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
@@ -38,13 +42,13 @@ public class AnimeMashup2 implements EntryPoint {
         animeList.setAutoCacheAllData(true);
         
         
-        tileGrid.setTop(130);
+        tileGrid.setTop(50);
         tileGrid.setWidth(960);
         tileGrid.setHeight(800);
         tileGrid.setTileWidth(150);
         tileGrid.setTileHeight(250);
         tileGrid.setCanReorderTiles(true);
-        tileGrid.setShowAllRecords(true);
+        tileGrid.setShowAllRecords(false);
         tileGrid.setDataSource(animeList);
 
 
@@ -75,57 +79,52 @@ public class AnimeMashup2 implements EntryPoint {
         //tileGrid.getResultSet().setUseClientFiltering(true);
         tileGrid.fetchData();
         
-        //tileGrid.sortByProperty("watched_status", true);
+        //tileGrid.sortByProperty("title", true);
 
         final DynamicForm form = new DynamicForm();
+        form.setNumCols(10);
+        
+        final CheckboxItem watchingChk = new CheckboxItem();  
+        watchingChk.setTitle("Watching");
+        
+        final CheckboxItem completedChk = new CheckboxItem();  
+        completedChk.setTitle("Completed");
+        
+        final CheckboxItem planToWatchChk = new CheckboxItem();  
+        planToWatchChk.setTitle("Plan to Watch");
+        
+        final CheckboxItem onholdChk = new CheckboxItem();  
+        onholdChk.setTitle("On-Hold");
+        
+        final CheckboxItem droppedChk = new CheckboxItem();  
+        droppedChk.setTitle("Dropped");
+        
+        form.addItemChangedHandler(new ItemChangedHandler() {  
+        	public void onItemChanged(ItemChangedEvent event) {
+        		Criteria c = new Criteria();
+        		ArrayList<String> valuesAL = new ArrayList<String>();
+        		String[] valuesArray;
+        		//Check each CheckBox value and if true add to the ArrayList
+	        	if (watchingChk.getValueAsBoolean()) valuesAL.add("watching");
+	        	if (completedChk.getValueAsBoolean()) valuesAL.add("completed");
+	        	if (planToWatchChk.getValueAsBoolean()) valuesAL.add("plan to watch");
+	        	if (onholdChk.getValueAsBoolean()) valuesAL.add("on-hold");
+	        	if (droppedChk.getValueAsBoolean()) valuesAL.add("dropped");
+	        	//If any checkboxes are ticked then add Criteria
+	        	//This is done to allow no checkboxes = show all data
+	        	if (valuesAL.size() > 0) {
+		        	valuesArray = new String[valuesAL.size()];
+		        	valuesAL.toArray(valuesArray);
+		        	c.addCriteria("watched_status", valuesArray);
+	        	}
+	        	//Send to Filter
+	        	Filter(c);
+	        }  
+	    });  
 
-        ButtonItem watchingBtn = new ButtonItem();
-        watchingBtn.setTitle("Watching");
-        watchingBtn.setStartRow(false);
-        watchingBtn.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Filter(new Criteria("watched_status", "watching"));
-            }
-        });
+
         
-        ButtonItem completedBtn = new ButtonItem();
-        completedBtn.setTitle("Completed");
-        completedBtn.setStartRow(false);
-        completedBtn.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Filter(new Criteria("watched_status", "completed"));
-            }
-        });
-        
-        ButtonItem planToWatchBtn = new ButtonItem();
-        planToWatchBtn.setTitle("Plan to Watch");
-        planToWatchBtn.setStartRow(false);
-        planToWatchBtn.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Filter(new Criteria("watched_status", "plan to watch"));
-            }
-        });
-        
-        ButtonItem onHoldBtn = new ButtonItem();
-        onHoldBtn.setTitle("On Hold");
-        onHoldBtn.setStartRow(false);
-        onHoldBtn.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Filter(new Criteria("watched_status", "on-hold"));
-            }
-        });     
-        
-        ButtonItem droppedBtn = new ButtonItem();
-        droppedBtn.setTitle("dropped");
-        droppedBtn.setStartRow(false);
-        droppedBtn.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Filter(new Criteria("watched_status", "Dropped"));
-            }
-        });
-        
-        form.setItems(watchingBtn, completedBtn, planToWatchBtn, onHoldBtn, droppedBtn);
-        
+        form.setItems(watchingChk, completedChk, planToWatchChk, onholdChk, droppedChk);
         canvas.addChild(form);
         canvas.addChild(tileGrid);
         canvas.draw();
