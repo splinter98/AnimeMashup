@@ -21,7 +21,12 @@ public class AnimeDS extends XJSONDataSource {
             instance = new AnimeDS("splinter98");  
         }  
         return instance;  
-    }  
+    }
+    
+    public static AnimeDS changeInstance(String user) {   
+            instance = new AnimeDS(user);  
+        return instance;  
+    }
     
     public AnimeDS(String User) {
     	setDataURL(URL_ANIMELIST + User);

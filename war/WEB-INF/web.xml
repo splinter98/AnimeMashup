@@ -9,7 +9,7 @@
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>AnimeMashup2.html</welcome-file>
+    <welcome-file>AnimeMashup.html</welcome-file>
   </welcome-file-list>
 
 </web-app>
