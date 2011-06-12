@@ -38,6 +38,8 @@ public class AnimeGWT implements EntryPoint {
 		          list.getlist(user.getValue()); 
 		        }
 		}); 
+		
+		String username = com.google.gwt.user.client.Window.Location.getParameter("user");
 			      
 	      sort = new SimpleComboBox<String>();
 	      sort.setTriggerAction(TriggerAction.ALL);  
@@ -76,7 +78,7 @@ public class AnimeGWT implements EntryPoint {
 		
 		ContentPanel cp = new ContentPanel(); 
 		cp.setBodyBorder(false); 
-		cp.setHeading("Anime List for Splinter98");
+		cp.setHeading("Please Enter a Username");
 		cp.setButtonAlign(HorizontalAlignment.CENTER); 
 		cp.setLayout(new FitLayout()); 
 		cp.setHeight(920);
@@ -87,10 +89,12 @@ public class AnimeGWT implements EntryPoint {
 
 		RootPanel.get().add(cp);
 		
-	}
-
-	protected void filter() {
+		if (username != null) {
+			list.getlist(username);
+			cp.setHeading("Anime List for: "+username);
+		}
 		
 	}
+
 
 }
