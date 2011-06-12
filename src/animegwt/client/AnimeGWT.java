@@ -45,7 +45,7 @@ public class AnimeGWT implements EntryPoint {
 	      sort.setForceSelection(true);  
 	      sort.setWidth(100);  
 	      sort.add("All");  
-	      sort.add("Watched");  
+	      sort.add("Watching");  
 	      sort.add("Completed");  
 	      sort.add("Plan to Watch");  
 	      sort.add("On-Hold");  
@@ -82,7 +82,7 @@ public class AnimeGWT implements EntryPoint {
 		cp.setHeight(920);
 		cp.setAutoWidth(true);
 		
-		cp.setTopComponent(tb);
+		cp.setTopComponent(tb); 
 		cp.add(lView);
 
 		RootPanel.get().add(cp);
